@@ -22,9 +22,16 @@ class AIService {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      final dynamic data = jsonDecode(response.body);
+      String content;
 
-      String content = data["choices"][0]["message"]["content"];
+      if (data is Map<String, dynamic> && data.containsKey('reaction')) {
+        return data;
+      } else if (data is Map<String, dynamic> && data.containsKey('choices')) {
+        content = data["choices"][0]["message"]["content"];
+      } else {
+        throw Exception("Unknown API response format: ${response.body}");
+      }
 
       content = content.trim();
 

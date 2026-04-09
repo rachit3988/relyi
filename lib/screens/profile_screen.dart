@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/person_profile.dart';
 import '../../../services/storage_service.dart';
 import 'chat_screen.dart';
@@ -26,6 +27,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     profiles.add(p);
     await StorageService.saveProfiles(profiles);
     setState(() {});
+  }
+
+  Future<void> _launchPrivacyPolicy() async {
+    final Uri url = Uri.parse('https://rachit3988.github.io/relyi/privacy-policy.html');
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
+    }
   }
 
   void showAddDialog() {
@@ -83,7 +91,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Profiles")),
+      appBar: AppBar(
+        title: const Text("Profiles"),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'privacy') {
+                _launchPrivacyPolicy();
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                const PopupMenuItem<String>(
+                  value: 'privacy',
+                  child: Text('Privacy Policy'),
+                ),
+              ];
+            },
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: showAddDialog,
         child: const Icon(Icons.add),
